@@ -63,5 +63,34 @@ impl ReflectivityModel {
             let coeff=max_coefficient*(2.0*fastrand::f64()-1.0);
             coeff
         }).collect();
+
+        //Generate alternating positive/negative coefficients
+        let reflection_coefficients: Vec<f64>=layer_positions.iter().enumerate().map(|(i, _)| {
+            let base_coeff=0.1;
+            if i%2==0 {base_coeff} else{-base_coeff}
+        }).collect();
+
+        Self::new(length, layer_positions, reflection_coefficients)
+    }
+
+    ///Create a wedge model (increasing layer thickness)
+    pub fn new_wedge(length: usize, num_layers: usize, initial_spacing: usize)-> Result<Self> {
+        if num_layers==0{
+            return Err(anyhow!("Number of layers must be positive"));
+        }
+
+        let mut layer_positions=Vec::new();
+        let mut position=initial_spacing;
+
+        for i in 0..num_layers{
+            if position >= length{
+                break;
+            }
+            layer_positions.push(position);
+            //Increase spacing for wedge effect
+            position += initial_spacing+i*(initial_spacing/4);
+        }
+
+        let reflection_coefficients: vec<f64>=layer_positions.iter().enumerate().map
     }
 }
